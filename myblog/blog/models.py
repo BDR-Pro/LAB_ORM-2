@@ -1,6 +1,7 @@
 # blog/models.py
 from django.db import models
 import random
+import sys
 import time
 
 CATEGORY_CHOICES = [
@@ -15,7 +16,7 @@ CATEGORY_CHOICES = [
 ]
 
 def random_image_filename(instance, filename):
-    num = random.randint(1, 10)
+    num = random.randint(1, sys.maxsize)
     return f"blog/{num}_{filename}"
 
 class Post(models.Model):
