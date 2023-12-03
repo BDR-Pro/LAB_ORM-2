@@ -55,9 +55,10 @@
         {% endfor %}
 
     
-    
+    {{ % if request.user.is_authenticated % }}
         <!-- Add a link to the 'Add Post' page -->
         <a href="{% url 'blog:add_post' %}" class="btn btn-success">Add Post</a>
+    {% endif %}
     </div>
     <div class="comment-section">
     {% if comments %}

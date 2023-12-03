@@ -1,8 +1,10 @@
 # blog/views.py
 from django.shortcuts import render, redirect , get_object_or_404
 from .models import Post , Comment
+from django.http import HttpResponse
 from django.utils import timezone 
 from .forms import PostForm , CommentForm
+from django.contrib.auth.decorators import login_required
 
 
 CATEGORY_CHOICES = [
@@ -47,7 +49,7 @@ def post_list(request):
     return render(request, 'blog/post_list.html', {'posts': posts , 'categories': CATEGORY_CHOICES , 'comments' : comments})
 
 def add_post(request):
-    if request.method == 'POST':
+    if request.method == 'POST' and login_required:
         form = PostForm(request.POST)
         if form.is_valid():
             post = form.save(commit=False)
@@ -59,7 +61,7 @@ def add_post(request):
             post.save()
             return redirect('/')
     else:
-        form = PostForm()
+        return HttpResponse("You are not authorized to view this page" , status=401)
     return render(request, 'blog/add_post.html', {'form': form})
 
 
@@ -82,7 +84,7 @@ def view_post(request, post_id):
 def update_post(request, post_id):
     post = get_object_or_404(Post, id=post_id)
 
-    if request.method == 'POST':
+    if request.method == 'POST' and login_required and request.user == post.user:
         form = PostForm(request.POST, instance=post)
         if form.is_valid():
             post.image = request.FILES['image']
@@ -90,6 +92,6 @@ def update_post(request, post_id):
             form.save()
             return redirect('blog:view_post', post_id=post.id)
     else:
-        form = PostForm(instance=post)
+        return HttpResponse("You are not authorized to view this page" , status=401)
 
     return render(request, 'blog/update_post.html', {'form': form})

@@ -91,6 +91,7 @@
             <a href="{% url 'blog:post_list' %}" class="btn btn-success">Home</a>
         </nav>
     </header>
+{% if request.user.is_authenticated %}
 
     <form method="post" action="{% url 'blog:update_post' form.instance.id %} " enctype="multipart/form-data">
         {% csrf_token %}
@@ -98,5 +99,12 @@
         {{ form.as_p }}
         <button type="submit">Update</button>
     </form>
+
+{% else %}
+    <h2>You are not logged in</h2>
+    <a href="{% url 'auth:login' %}" class="btn btn-success">Login</a>
+{% endif %}
+
+
 </body>
 </html>

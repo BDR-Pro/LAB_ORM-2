@@ -7,12 +7,16 @@ from django.forms import DateInput
 class PostForm(forms.ModelForm):
     class Meta:
         model = Post
-        fields = ['title', 'content', 'is_published', 'published_at', 'image', 'category']
+        fields = ['user','title', 'content', 'published_at', 'image', 'category']
         widgets = {
-            'published_at': DateInput(attrs={'type': 'date'})
+            'published_at': DateInput(attrs={'type': 'date'}),
+            'user': forms.HiddenInput()
         }
         
 class CommentForm(forms.ModelForm):
     class Meta:
         model = Comment
-        fields = ['name', 'content']
+        fields = ['user', 'content']
+        widgets = {
+            'user': forms.HiddenInput()            
+        } 
