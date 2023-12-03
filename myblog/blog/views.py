@@ -3,9 +3,8 @@ from django.shortcuts import render, redirect , get_object_or_404
 from .models import Post , Comment
 from django.http import HttpResponse
 from django.utils import timezone 
-from .forms import PostForm , CommentForm
 from django.contrib.auth.decorators import login_required
-
+from .forms import PostForm , CommentForm
 
 CATEGORY_CHOICES = [
     ("tech", "Tech"),
@@ -48,21 +47,27 @@ def post_list(request):
     
     return render(request, 'blog/post_list.html', {'posts': posts , 'categories': CATEGORY_CHOICES , 'comments' : comments})
 
+@login_required
 def add_post(request):
-    if request.method == 'POST' and login_required:
-        form = PostForm(request.POST)
+    if request.method == "GET":
+        form = PostForm()
+        return render(request, 'blog/add_post.html', {'form': form})
+
+    if request.method == 'POST':
+        request_post = request.POST.copy()
+        request_post.update({"user": request.user.id})
+        form = PostForm(request_post, request.FILES )
         if form.is_valid():
             post = form.save(commit=False)
-            post.is_published = True
             post.published_at = timezone.now()
-            post.image = request.FILES['image'] 
-            print(post.image)
-            print(post.image.url)
+            post.user = request.user
             post.save()
             return redirect('/')
-    else:
-        return HttpResponse("You are not authorized to view this page" , status=401)
-    return render(request, 'blog/add_post.html', {'form': form})
+        else:
+            print(form.errors)
+
+    # If the request method is neither GET nor POST or the user is not authenticated
+    return HttpResponse("You are not authorized to view this page", status=401)
 
 
 def view_post(request, post_id):
@@ -81,10 +86,11 @@ def view_post(request, post_id):
 
     return render(request, 'blog/view_post.html', {'post': post, 'comments': comments, 'form': form})
 
+@login_required
 def update_post(request, post_id):
     post = get_object_or_404(Post, id=post_id)
 
-    if request.method == 'POST' and login_required and request.user == post.user:
+    if request.method == 'POST' and request.user.is_authenticated and request.user == post.user:
         form = PostForm(request.POST, instance=post)
         if form.is_valid():
             post.image = request.FILES['image']

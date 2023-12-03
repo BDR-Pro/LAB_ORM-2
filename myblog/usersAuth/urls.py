@@ -2,7 +2,7 @@
 from django.urls import path , include
 from .views import login , signup
 
-app_name = 'blog'
+app_name = 'usersAuth'
 
 urlpatterns = [
     path('accounts/', include('django.contrib.auth.urls')), 

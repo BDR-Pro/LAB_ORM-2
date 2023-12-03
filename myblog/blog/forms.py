@@ -13,6 +13,17 @@ class PostForm(forms.ModelForm):
             'user': forms.HiddenInput()
         }
         
+        
+        
+    def __init__(self, *args, **kwargs):
+        # Call the parent constructor
+        super(PostForm, self).__init__(*args, **kwargs)
+        
+        # Set the initial value for the 'user' field
+        # Assuming that the current user is available in the view's request
+        self.fields['user'].initial = self.initial.get('user', None)
+        
+        
 class CommentForm(forms.ModelForm):
     class Meta:
         model = Comment

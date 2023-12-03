@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block title %}Login | Blog{% endblock %}
+
+{% block header %}Login{% endblock %}
+
+{% block content %}
+
+{% if error %}
+                
+        <div class="alert alert-danger" role="alert">
+                {{ error }}
+        </div>
+
+
+{% endif %}
+
+<div class="container">
+    <h2>Login</h2>
+    <form method="post">
+        {% csrf_token %}
+        <label for="id_username">Username:</label>
+        <input type="text" name="username" maxlength="150" autocapitalize="none" autocomplete="username" autofocus required id="id_username">
+        
+        <label for="id_password">Password:</label>
+        <input type="password" name="password" autocomplete="new-password" required id="id_password">
+        
+        <button type="submit">Login</button>
+    </form>
+
+    <div class="link-container">
+        <p>Don't have an account? <a href="{% url 'usersAuth:signup' %}">Sign Up</a></p>
+    </div>
+</div>
+{% endblock %}

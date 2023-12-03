@@ -17,12 +17,14 @@
     
     {% for comment in comments %}
         <div class="comment">
-            <p class="comment-meta">Comment by {{ comment.name }} on {{ comment.created_at }}</p>
+            <p class="comment-meta">Comment by {{ comment.user.username }} on {{ comment.created_at }}</p>
             <p class="comment-content">{{ comment.content }}</p>
         </div>
     {% endfor %}
 
     {% if request.user.is_authenticated %}
+
+        <h3>Add a comment as {{ request.user }}</h3>
 
         <form method="post" action="{% url 'blog:view_post' post.id %}">
             {% csrf_token %}

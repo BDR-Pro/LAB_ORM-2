@@ -6,7 +6,7 @@
 {% block content %}
     <div class="post-list">
         <h2>Blog Posts</h2>
-          
+        <h2>{{ request.user }}</h2>
         <!-- Button to order by 'published_at' -->
         <a href="{% url 'blog:post_list' %}?OrderBy=p_a" class="btn btn-order-by">
             Order by Published At
@@ -46,19 +46,25 @@
                 <p class="post-meta">Published at: {{ post.published_at }}</p>
                 
                 <!-- Edit Post button -->
+            {% if request.user.is_authenticated %}
+            {% if request.user == post.user %}
                 <div class="edit-post-container">
                     <a href="{% url 'blog:update_post' post.id %}" class="btn btn-edit-post">Edit Post</a>
                 </div>
-
+            {% endif %}
+            {% endif %}
                 <hr>
             </div>
         {% endfor %}
 
-    
-    {{ % if request.user.is_authenticated % }}
-        <!-- Add a link to the 'Add Post' page -->
-        <a href="{% url 'blog:add_post' %}" class="btn btn-success">Add Post</a>
-    {% endif %}
+
+{% if request.user.is_authenticated %}
+    <a href="{% url 'blog:add_post' %}" class="btn btn-success">Add Post</a>
+
+{% else %}
+
+    <p>You need to <a href="{% url 'login' %}">login</a> to add a post.</p>
+{% endif %}
     </div>
     <div class="comment-section">
     {% if comments %}
@@ -73,10 +79,13 @@
         <p class="comment-meta">Published at: {{ comment.created_at }} by {{comment.name}}</p>
 
         <!-- Edit Post button -->
+        {% if request.user.is_authenticated %}
+        {% if request.user == comment.post.user %}
         <div class="edit-post-container">
             <a href="{% url 'blog:update_post' comment.post.id %}" class="btn btn-edit-post">Edit Post</a>
         </div>
-
+        {% endif %}
+        {% endif %}
         <hr>
     </div>
 </div>
